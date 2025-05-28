@@ -18,7 +18,7 @@ try {
     
     if ($inscripcionesResult && $inscripcionesResult->num_rows > 0) {
         // Contadores para dorsales por categoría
-        $contadores = ['10k' => 800, '5k' => 440, '2k' => 240];
+        $contadores = ['10k' => 900, '5k' => 400, '2k' => 250];
         
         while ($inscripcion = $inscripcionesResult->fetch_assoc()) {
             $inscripcionId = $inscripcion['id'];

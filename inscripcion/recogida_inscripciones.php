@@ -1,3 +1,172 @@
+<?php
+session_start();
+
+// Configuración de seguridad
+$PASSWORD = "BT2025_Admin"; // Cambia esta contraseña por una más segura
+
+// Verificar autenticación
+if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
+        if ($_POST['password'] === $PASSWORD) {
+            $_SESSION['authenticated'] = true;
+        } else {
+            $error_message = "Contraseña incorrecta";
+        }
+    }
+    
+    if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
+        // Mostrar formulario de login
+        ?>
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Acceso - Recogida Inscripciones BT2025</title>
+            <style>
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                body { 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 20px;
+                }
+                
+                .login-container {
+                    background: white;
+                    padding: 40px;
+                    border-radius: 15px;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                    width: 100%;
+                    max-width: 400px;
+                    text-align: center;
+                }
+                
+                .login-header {
+                    margin-bottom: 30px;
+                }
+                
+                .login-header h1 {
+                    color: #2c3e50;
+                    font-size: 1.8rem;
+                    margin-bottom: 10px;
+                }
+                
+                .login-header p {
+                    color: #7f8c8d;
+                    font-size: 0.9rem;
+                }
+                
+                .form-group {
+                    margin-bottom: 25px;
+                    text-align: left;
+                }
+                
+                .form-label {
+                    display: block;
+                    margin-bottom: 8px;
+                    color: #2c3e50;
+                    font-weight: 500;
+                }
+                
+                .form-input {
+                    width: 100%;
+                    padding: 15px;
+                    border: 2px solid #bdc3c7;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    transition: border-color 0.3s ease;
+                }
+                
+                .form-input:focus {
+                    outline: none;
+                    border-color: #3498db;
+                    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+                }
+                
+                .login-btn {
+                    width: 100%;
+                    padding: 15px;
+                    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                }
+                
+                .login-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+                }
+                
+                .error-message {
+                    background: #e74c3c;
+                    color: white;
+                    padding: 12px;
+                    border-radius: 6px;
+                    margin-bottom: 20px;
+                    font-size: 14px;
+                }
+                
+                .security-info {
+                    margin-top: 20px;
+                    padding: 15px;
+                    background: #f8f9fa;
+                    border-radius: 6px;
+                    font-size: 12px;
+                    color: #7f8c8d;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="login-container">
+                <div class="login-header">
+                    <h1>🔐 Acceso Restringido</h1>
+                    <p>Recogida de Inscripciones BT2025</p>
+                </div>
+                
+                <?php if (isset($error_message)): ?>
+                    <div class="error-message">
+                        ⚠️ <?php echo htmlspecialchars($error_message); ?>
+                    </div>
+                <?php endif; ?>
+                
+                <form method="POST">
+                    <div class="form-group">
+                        <label class="form-label" for="password">Contraseña de acceso:</label>
+                        <input type="password" id="password" name="password" class="form-input" 
+                               placeholder="Introduce la contraseña" required autofocus>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">
+                        🚀 Acceder al Sistema
+                    </button>
+                </form>
+                
+                <div class="security-info">
+                    🛡️ Sistema protegido para personal autorizado
+                </div>
+            </div>
+        </body>
+        </html>
+        <?php
+        exit;
+    }
+}
+
+// Logout si se solicita
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -64,6 +233,31 @@
             position: relative;
             z-index: 1;
             opacity: 0.9;
+        }
+        
+        .header-actions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 2;
+        }
+        
+        .logout-btn {
+            background: rgba(231, 76, 60, 0.8);
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(231, 76, 60, 1);
+            transform: translateY(-1px);
         }
         
         .stats { 
@@ -451,6 +645,14 @@
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
         }
         
         .nav-btn {
@@ -472,6 +674,40 @@
             transform: translateY(-2px);
         }
         
+        .refresh-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .refresh-btn {
+            background: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: #2ecc71;
+            transform: translateY(-2px);
+        }
+        
+        .refresh-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .last-update {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        
         @media (max-width: 768px) {
             .stats { grid-template-columns: repeat(2, 1fr); }
             .inscripciones-grid { 
@@ -482,19 +718,38 @@
             .search-input { width: 100%; }
             .header h1 { font-size: 2rem; }
             .corredor-info { flex-direction: column; align-items: flex-start; }
+            .nav-links { flex-direction: column; align-items: stretch; }
+            .nav-buttons { justify-content: center; }
+            .refresh-section { justify-content: center; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <div class="header-actions">
+                <a href="?logout=1" class="logout-btn" onclick="return confirm('¿Seguro que quieres cerrar sesión?')">
+                    🚪 Salir
+                </a>
+            </div>
             <h1>📋 Recogida por Inscripciones BT2025</h1>
             <p>Gestión de entrega de dorsales y camisetas por inscripción completa</p>
         </div>
 
         <div class="nav-links">
-            <a href="recogida_dorsales.php" class="nav-btn">👤 Vista por Corredor</a>
-            <a href="dorsales.php" class="nav-btn" target="_blank">📋 Lista Completa</a>
+            <div class="nav-buttons">
+                <a href="recogida_dorsales.php" class="nav-btn">👤 Vista por Corredor</a>
+                <a href="dorsales.php" class="nav-btn" target="_blank">📋 Lista Completa</a>
+            </div>
+            
+            <div class="refresh-section">
+                <button id="refreshBtn" class="refresh-btn" onclick="manualRefresh()">
+                    🔄 Actualizar Datos
+                </button>
+                <div class="last-update">
+                    <div id="lastUpdate">Última actualización: --:--</div>
+                </div>
+            </div>
         </div>
 
         <div class="stats">
@@ -564,6 +819,7 @@
                     renderInscripciones();
                     document.getElementById('loadingDiv').style.display = 'none';
                     document.getElementById('inscripcionesGrid').style.display = 'grid';
+                    updateLastRefresh();
                 } else {
                     throw new Error('Formato de datos inválido');
                 }
@@ -572,6 +828,32 @@
                 console.error('Error loading data:', error);
                 showToast('Error al cargar los datos: ' + error.message, 'error');
                 document.getElementById('loadingDiv').innerHTML = '<p>Error al cargar los datos. Por favor, recarga la página.</p>';
+            }
+        }
+
+        function updateLastRefresh() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-ES', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('lastUpdate').textContent = `Última actualización: ${timeString}`;
+        }
+
+        async function manualRefresh() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            refreshBtn.disabled = true;
+            refreshBtn.textContent = '🔄 Actualizando...';
+            
+            try {
+                await loadInscripciones();
+                showToast('Datos actualizados correctamente', 'success');
+            } catch (error) {
+                showToast('Error al actualizar los datos', 'error');
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = '🔄 Actualizar Datos';
             }
         }
 
@@ -601,37 +883,6 @@
             }
             return dorsalInfo.replace('-', ' #');
         }
-
-        // function renderInscripciones() {
-        //     const grid = document.getElementById('inscripcionesGrid');
-        //     const noResults = document.getElementById('noResults');
-            
-        //     if (filteredInscripciones.length === 0) {
-        //         grid.style.display = 'none';
-        //         noResults.style.display = 'block';
-        //         return;
-        //     }
-
-        //     noResults.style.display = 'none';
-        //     grid.style.display = 'grid';
-            
-        //     grid.innerHTML = filteredInscripciones.map(inscripcion => `
-        //         <div class="inscripcion-card ${inscripcion.recogido == 1 ? 'recogido' : ''}" data-id="${inscripcion.inscripcion_id}">
-        //             <div class="inscripcion-header">
-        //                 <div class="inscripcion-info">
-        //                     <div class="inscripcion-numero">Inscripción #${inscripcion.orden}</div>
-        //                     <div class="inscripcion-contacto">
-        //                         📧 ${inscripcion.email}<br>
-        //                         📱 ${inscripcion.telefono}
-        //                     </div>
-        //                 </div>
-        //                 <div class="status-badge ${inscripcion.recogido == 1 ? 'recogido' : 'pendiente'}">
-        //                     ${inscripcion.recogido == 1 ? '✅ Inscripción Recogida' : '📦 Marcar como Recogida'}
-        //                 </button>
-        //             </div>
-        //         </div>
-        //     `).join('');
-        // }
 
         function renderInscripciones() {
             const grid = document.getElementById('inscripcionesGrid');
@@ -821,10 +1072,7 @@
             });
         });
 
-        // Auto-refresh cada 30 segundos para sincronizar con otros usuarios
-        setInterval(loadInscripciones, 30000);
-
-        // Cargar datos al iniciar
+        // Cargar datos al iniciar (sin auto-refresh)
         loadInscripciones();
     </script>
 </body>
