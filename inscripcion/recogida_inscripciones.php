@@ -656,7 +656,54 @@
                                 📱 ${inscripcion.telefono}
                             </div>
                         </div>
-                        <button class="status-badge ${inscripcion.recogido == 1 ? 'recogido' : 'pendiente'}">
+                        <div class="status-badge ${inscripcion.recogido == 1 ? 'recogido' : 'pendiente'}">
+                            ${inscripcion.recogido == 1 ? '✅ Recogida' : '📦 Pendiente'}
+                        </div>
+                    </div>
+
+                    <div class="resumen-box">
+                        <div class="resumen-text">
+                            👥 ${inscripcion.total_corredores} corredor${inscripcion.total_corredores !== 1 ? 'es' : ''} | 
+                            👕 ${inscripcion.total_camisetas} camiseta${inscripcion.total_camisetas !== 1 ? 's' : ''}
+                        </div>
+                    </div>
+
+                    <div class="corredores-section">
+                        <div class="section-title">
+                            🏃‍♂️ Corredores y Dorsales
+                        </div>
+                        ${inscripcion.corredores.map(corredor => `
+                            <div class="corredor-item">
+                                <div class="corredor-info">
+                                    <div>
+                                        <div class="corredor-nombre">
+                                            ${corredor.nombre} ${corredor.apellido1} ${corredor.apellido2}
+                                        </div>
+                                        <div class="corredor-detalles">
+                                            DNI: ${corredor.dni} | Edad: ${corredor.edad} años | ${corredor.sexo} | ${corredor.carrera}
+                                        </div>
+                                    </div>
+                                    <div class="dorsal-badge ${getDorsalClass(corredor.dorsal_info)}">
+                                        ${formatDorsal(corredor.dorsal_info)}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="camisetas-section">
+                        <div class="section-title">
+                            👕 Camisetas
+                        </div>
+                        <div class="camisetas-info">
+                            ${inscripcion.camisetas}
+                        </div>
+                    </div>
+
+                    <div class="inscripcion-actions">
+                        <button class="toggle-btn ${inscripcion.recogido == 1 ? 'recogido' : 'pendiente'}" 
+                                id="btn-${inscripcion.inscripcion_id}"
+                                onclick="toggleRecogida(${inscripcion.inscripcion_id})">
                             ${inscripcion.recogido == 1 ? '✅ Inscripción Recogida' : '📦 Marcar como Recogida'}
                         </button>
                     </div>
